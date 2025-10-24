@@ -19,6 +19,20 @@ A sophisticated facilitation agent that guides teams through Kaizen and DMAIC pr
 - **Progression**: Initial problem → COPQ breakdown (Prevention/Appraisal/Internal Failure/External Failure) → VOC collection (complaints/direct/surveys/become the customer) → KANO classification → CTQ identification → House of Quality mapping → Devil's advocate challenge → SIPOC mapping → Stakeholder analysis → Refined problem statement → SMART goal → Project charter
 - **Success criteria**: Each tool has AI-powered guidance with specific prompt context to generate comprehensive, professional responses that build upon each other
 
+### Enhanced Measure Phase Tools
+- **Functionality**: Operational Definitions, Data Collection Plan, Additional KPIs (Cycle Efficiency, Lead Time, TAKT Time, Little's Law, Cost equations, Expected Value, Break-Even Point, Productivity), Waiting Line Theory/Queue Analysis, Measurement System Analysis (MSA), Process Capability Analysis (Cp, Cpk, DPMO, sigma level)
+- **Purpose**: Establish baseline metrics and validate measurement systems using rigorous analytical methods
+- **Trigger**: User navigates to Measure phase with completed Define work
+- **Progression**: Define metrics → Plan data collection → Calculate operational KPIs → Analyze queue dynamics → Validate measurement systems → Assess process capability
+- **Success criteria**: Users can quantify current state with validated, statistically sound baseline data
+
+### Enhanced Analyze Phase Tools (with Attachment Support)
+- **Functionality**: Detailed Process Map, Additional Mapping (Value Stream Map, Time-Value Map, Service Blueprint, Spaghetti Diagram), Root Cause Analysis (5 Whys, Fishbone, Fault Tree), Brainstorming & Affinity Diagram, Seven Manufacturing Wastes Review (Overproduction, Waiting, Transporting, Over-processing, Inventory, Motion, Defects), Service Process Wastes (Delay, Incorrect Inventory, Duplication), Additional Wastes (Human Potential, Energy, Pollution, Space), Graphical Analysis (Pareto, Histogram, Run Chart, Scatter Plot, Box Plot, Control Chart), Statistical Analysis (Hypothesis Testing, Golden Batch, Means Comparison, Regression), Modeling & Simulation (Discrete Event, Queuing Models, Capacity Models, Cost Models), Validated Root Causes, Improvement Hypothesis
+- **Purpose**: Identify, validate, and prioritize root causes using comprehensive analytical tools - any analysis can include file attachments (process maps, charts, photos, data files)
+- **Trigger**: User navigates to Analyze phase with baseline data from Measure
+- **Progression**: Map current process → Identify waste categories → Conduct root cause analysis → Perform statistical validation → Build models/simulations → Synthesize validated causes → Formulate improvement hypothesis
+- **Success criteria**: Each analysis tool supports both text documentation and file attachments (images, PDFs, CSV, Excel). Root causes are data-validated with statistical significance, prioritized by impact, and connected to measurable improvement hypotheses
+
 ### Phase-by-Phase Facilitation
 - **Functionality**: Guide users through Define, Measure, Analyze, Improve, Control phases with contextual prompts
 - **Purpose**: Ensure comprehensive project planning without overwhelming teams
@@ -41,11 +55,18 @@ A sophisticated facilitation agent that guides teams through Kaizen and DMAIC pr
 - **Success criteria**: Each BMAD technique has a distinct, usable interface that produces exportable results
 
 ### Template & Document Export
-- **Functionality**: Generate complete project documentation (charter, SIPOC, control plan, etc.)
+- **Functionality**: Generate complete project documentation (charter, SIPOC, analysis reports, control plan, etc.) with embedded attachment references
 - **Purpose**: Create professional deliverables for stakeholder review and project tracking
 - **Trigger**: User clicks "Export" or "Generate Template" button
-- **Progression**: Button click → Compile user inputs → Format as markdown → Download file
-- **Success criteria**: Exported documents are complete, well-formatted markdown files ready for use
+- **Progression**: Button click → Compile user inputs and attachment metadata → Format as markdown → Download file
+- **Success criteria**: Exported documents are complete, well-formatted markdown files with attachment references included
+
+### File Attachment Support
+- **Functionality**: Upload, store, preview, and download file attachments for any question that supports them (particularly in Analyze phase)
+- **Purpose**: Capture visual process maps, charts, photos, data files that complement text analysis
+- **Trigger**: User clicks "Attach Files" button on questions marked with attachment support
+- **Progression**: Select files → Validate type/size → Convert to base64 → Store in KV → Display with preview/download → Include in exports
+- **Success criteria**: Support images (PNG, JPG, GIF, WEBP), PDFs, text files, and spreadsheets (CSV, XLS, XLSX) up to 5MB each. Files persist across sessions and can be downloaded or removed
 
 ### Project State Management
 - **Functionality**: Persist all user inputs, progress, and generated content across sessions
@@ -58,7 +79,10 @@ A sophisticated facilitation agent that guides teams through Kaizen and DMAIC pr
 - **Empty Projects**: Show welcome screen with guided onboarding for first-time users
 - **Incomplete Phases**: Highlight missing required fields before allowing export
 - **Long-Form Text**: Implement auto-growing textareas with character count guidance
+- **Large Attachments**: Validate file size (5MB max) and type before upload, show clear error messages
+- **Attachment Storage**: Use base64 encoding in KV store, gracefully handle storage limits
 - **Concurrent Editing**: Warn if project data seems stale (edge case for shared environments)
+- **Export with Attachments**: Include attachment file names and metadata in exports (actual files remain in app)
 - **Export Failures**: Provide fallback copy-to-clipboard option if download fails
 
 ## Design Direction
@@ -136,6 +160,10 @@ Animations should feel purposeful and professional - like page turns in a high-q
   - Target (goals/CTQs)
   - GitBranch (SIPOC processes)
   - Sparkle (AI generation)
+  - Paperclip (file attachments)
+  - File (attached documents)
+  - X (remove attachments)
+  - ChartBar, MagnifyingGlass, TrendUp, ShieldCheck (phase icons)
   
 - **Spacing**: Use 4px base unit - generous 24px padding on cards, 16px gaps between form elements, 32px margins between major sections
   

@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo } from 'react'
 import { useKV } from '@github/spark/hooks'
-import { DMaicPhase, ProjectData, BmadTechnique } from '@/lib/types'
+import { DMaicPhase, ProjectData, BmadTechnique, AttachmentData } from '@/lib/types'
 import { PHASE_DATA } from '@/lib/phase-data'
 import { 
   generateProjectCharter, 
@@ -50,6 +50,13 @@ function App() {
       improve: {},
       control: {}
     },
+    attachments: {
+      define: {},
+      measure: {},
+      analyze: {},
+      improve: {},
+      control: {}
+    },
     bmadNotes: {}
   })
 
@@ -65,6 +72,7 @@ function App() {
         projectName,
         lastUpdated: new Date().toISOString(),
         phases: { define: {}, measure: {}, analyze: {}, improve: {}, control: {} },
+        attachments: { define: {}, measure: {}, analyze: {}, improve: {}, control: {} },
         bmadNotes: {}
       }
       return {
@@ -81,6 +89,7 @@ function App() {
         projectName: '',
         lastUpdated: new Date().toISOString(),
         phases: { define: {}, measure: {}, analyze: {}, improve: {}, control: {} },
+        attachments: { define: {}, measure: {}, analyze: {}, improve: {}, control: {} },
         bmadNotes: {}
       }
       return {
@@ -90,6 +99,29 @@ function App() {
           [currentPhase]: {
             ...current.phases[currentPhase],
             [questionId]: value
+          }
+        },
+        lastUpdated: new Date().toISOString()
+      }
+    })
+  }
+
+  const updateAttachments = (questionId: string, attachments: AttachmentData[]) => {
+    setProjectData((current) => {
+      if (!current) return {
+        projectName: '',
+        lastUpdated: new Date().toISOString(),
+        phases: { define: {}, measure: {}, analyze: {}, improve: {}, control: {} },
+        attachments: { define: {}, measure: {}, analyze: {}, improve: {}, control: {} },
+        bmadNotes: {}
+      }
+      return {
+        ...current,
+        attachments: {
+          ...current.attachments,
+          [currentPhase]: {
+            ...(current.attachments?.[currentPhase] || {}),
+            [questionId]: attachments
           }
         },
         lastUpdated: new Date().toISOString()
@@ -214,6 +246,7 @@ Write in a clear, professional tone suitable for project documentation. Be speci
         projectName: '',
         lastUpdated: new Date().toISOString(),
         phases: { define: {}, measure: {}, analyze: {}, improve: {}, control: {} },
+        attachments: { define: {}, measure: {}, analyze: {}, improve: {}, control: {} },
         bmadNotes: {}
       }
       return {
@@ -390,6 +423,8 @@ Write in a clear, professional tone suitable for project documentation. Be speci
                 onChange={(value) => updatePhaseData(question.id, value)}
                 onAIGenerate={handleAIGenerate}
                 isGenerating={generatingQuestion === question.id}
+                attachments={projectData.attachments?.[currentPhase]?.[question.id] || []}
+                onAttachmentsChange={(attachments) => updateAttachments(question.id, attachments)}
               />
             ))}
           </div>
