@@ -118,6 +118,61 @@ function App() {
       const baseInstructions = question.aiPromptContext || 
         'Generate a comprehensive, professional response to this question. Be specific, actionable, and use DMAIC best practices.'
 
+      let contextualGuidance = ''
+      
+      if (currentPhase === 'define') {
+        const definePhase = projectData.phases.define
+        
+        if (questionId === 'refined-problem-statement') {
+          const relevantFields = [
+            { id: 'initial-problem-statement', label: 'Initial Problem' },
+            { id: 'copq-analysis', label: 'Cost of Poor Quality' },
+            { id: 'voc-analysis', label: 'Voice of Customer' },
+            { id: 'ctq-hoq', label: 'Critical to Quality' },
+            { id: 'sipoc', label: 'SIPOC Analysis' },
+            { id: 'stakeholder-analysis', label: 'Stakeholders' },
+            { id: 'devils-advocate', label: 'Devil\'s Advocate Challenge' }
+          ]
+          
+          const completedFields = relevantFields
+            .filter(f => definePhase[f.id]?.trim())
+            .map(f => `**${f.label}:**\n${definePhase[f.id]}`)
+            .join('\n\n')
+          
+          if (completedFields) {
+            contextualGuidance = `\n\nUSE THE FOLLOWING COMPLETED ANALYSIS TO INFORM YOUR REFINED PROBLEM STATEMENT:\n\n${completedFields}\n\nSynthesize these insights to create a refined problem statement that is more precise, data-driven, and focused on root issues rather than symptoms. Draw specific facts, numbers, and insights from the analysis above.`
+          }
+        } else if (questionId === 'goal-statement') {
+          const relevantFields = [
+            { id: 'refined-problem-statement', label: 'Refined Problem Statement' },
+            { id: 'ctq-hoq', label: 'Critical to Quality Metrics' },
+            { id: 'copq-analysis', label: 'Cost of Poor Quality' },
+            { id: 'voc-analysis', label: 'Voice of Customer Expectations' }
+          ]
+          
+          const completedFields = relevantFields
+            .filter(f => definePhase[f.id]?.trim())
+            .map(f => `**${f.label}:**\n${definePhase[f.id]}`)
+            .join('\n\n')
+          
+          if (completedFields) {
+            contextualGuidance = `\n\nUSE THE FOLLOWING COMPLETED ANALYSIS TO CREATE A SMART GOAL:\n\n${completedFields}\n\nCreate a SMART goal statement with specific metrics, baselines, and targets drawn from the CTQ and COPQ analysis above. Include measurable process metrics and business impact.`
+          }
+        } else if (questionId === 'project-charter') {
+          const allDefineFields = Object.entries(definePhase)
+            .filter(([_, value]) => value?.trim())
+            .map(([key, value]) => {
+              const q = PHASE_DATA.define.questions.find(q => q.id === key)
+              return `**${q?.text || key}:**\n${value}`
+            })
+            .join('\n\n')
+          
+          if (allDefineFields) {
+            contextualGuidance = `\n\nUSE ALL COMPLETED DEFINE PHASE WORK TO CREATE THE PROJECT CHARTER:\n\n${allDefineFields}\n\nSynthesize all of the above analysis into a comprehensive, professional Project Charter. Use the refined problem statement, SMART goal, COPQ data, stakeholder analysis, SIPOC, and all other completed work to create a complete charter document that serves as the formal artifact for this project.`
+          }
+        }
+      }
+
       const promptText = `You are an expert Kaizen and DMAIC facilitator helping a team with a continuous improvement project.
 
 PROJECT CONTEXT:
@@ -132,7 +187,7 @@ GUIDANCE:
 ${baseInstructions}
 
 OTHER INFORMATION FROM THIS PHASE:
-${allPhaseData || 'No other information has been provided yet for this phase.'}
+${allPhaseData || 'No other information has been provided yet for this phase.'}${contextualGuidance}
 
 CURRENT ANSWER (if any):
 ${currentValue || 'No answer has been provided yet.'}
