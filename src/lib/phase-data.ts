@@ -102,44 +102,58 @@ export const PHASE_DATA: Record<string, PhaseData> = {
     description: 'Establish baseline metrics and data collection methods to quantify the current state of the process.',
     questions: [
       {
-        id: 'current-metrics',
-        text: 'What are the current performance metrics?',
-        description: 'Document baseline measurements for all CTQs identified in the Define phase.',
+        id: 'operational-definitions',
+        text: 'Operational Definitions',
+        description: 'Define exactly how each CTQ metric will be measured. Include: what counts, how to measure it, units of measure, and calculation method. This ensures everyone measures the same way.',
         required: true,
-        placeholder: 'Current avg response time: 4.2 hours, CSAT: 72%, First contact resolution: 58%...',
-        multiline: true
+        placeholder: 'Response Time = Time from ticket creation to first agent response (hours, measured from system timestamp). Defect = Any response >2hrs or requiring rework. First Contact Resolution = % of tickets closed without reopening within 7 days...',
+        multiline: true,
+        aiPromptContext: 'Help create precise operational definitions for each CTQ metric identified in the Define phase. For each metric, specify: 1) Exactly what is being measured (clear definition), 2) How it will be measured (method and tool), 3) Unit of measure, 4) Calculation formula, 5) What counts and what doesn\'t (inclusion/exclusion criteria), 6) Who will measure it and how often. Operational definitions must be clear enough that any person would measure the same thing the same way.'
       },
       {
-        id: 'data-sources',
-        text: 'What are your data sources and collection methods?',
-        description: 'Identify where data comes from and how it will be collected, measured, and validated.',
+        id: 'data-collection-plan',
+        text: 'Data Collection Plan',
+        description: 'Document what data will be collected, from where, how often, by whom, and in what format. Include sampling strategy if full population data is not available.',
         required: true,
-        placeholder: 'Ticketing system logs, customer surveys (sent 24h after resolution), quality audits...',
-        multiline: true
+        placeholder: 'Response Time: Collected automatically from ticketing system, every ticket, exported daily to CSV | CSAT: Survey sent 24hrs post-resolution, 5-point scale, stored in CRM | Staffing Levels: Manual log by shift supervisor, hourly, Excel spreadsheet...',
+        multiline: true,
+        aiPromptContext: 'Help create a comprehensive Data Collection Plan. For each metric: 1) What data will be collected, 2) Data source (system, manual observation, survey), 3) Collection frequency (continuous, daily, weekly), 4) Who collects it, 5) Storage format and location, 6) Sampling strategy (if applicable: sample size, randomization method), 7) Start and end dates for baseline period. Create a table format showing: Metric | Source | Method | Frequency | Owner | Sample Size.'
       },
       {
-        id: 'measurement-system',
-        text: 'How will you ensure measurement accuracy?',
-        description: 'Describe your measurement system analysis (MSA) approach to ensure data reliability.',
+        id: 'additional-kpis',
+        text: 'Additional KPIs & Analytical Metrics',
+        description: 'Calculate and track additional operational metrics: Cycle Efficiency = Total Value-Add Time / Total Lead Time | Average Lead Time = WIP / Completion Rate | TAKT Time = Available Work Time / Customer Demand | Little\'s Law: Inventory = Arrival Rate × Time in System | Total Cost = Fixed Cost + (Variable Cost × Units) | Expected Value = Σ(Probability × Cost) | Break-Even Point = Fixed Costs / (Revenue per unit - Variable Cost per unit) | Productivity = Outputs / Inputs',
+        required: true,
+        placeholder: 'Cycle Efficiency: 45min value-add / 4.2hr lead time = 17.9% | Avg Lead Time: 85 tickets WIP / 42 tickets/day = 2.02 days | TAKT Time: 8hrs available / 42 customer tickets = 11.4 min/ticket | Inventory (WIP): 42 tickets/day × 2.02 days = 85 tickets | Total Cost: $8,000 fixed + ($12/ticket × 800 tickets/mo) = $17,600/mo | BEP: $8,000 / ($25 - $12) = 615 tickets/month | Productivity: 800 tickets resolved / 2,500 FTE-hours = 0.32 tickets/hour...',
+        multiline: true,
+        aiPromptContext: 'Help calculate relevant operational and financial KPIs using these formulas: 1) Cycle Efficiency = Value-Add Time / Total Lead Time (identifies waste), 2) Average Lead Time = WIP / Completion Rate (Little\'s Law variant), 3) TAKT Time = Available Work Time / Customer Demand (required pace), 4) Little\'s Law: Inventory = Arrival Rate × Time in System (WIP calculation), 5) Total Cost = Fixed Costs + (Variable Cost per Unit × Volume), 6) Expected Value = Σ(Probability_i × Cost_i) for risk/decision analysis, 7) Break-Even Point = Fixed Costs / (Revenue per unit - Variable Cost per unit), 8) Productivity = Outputs / Inputs. Based on the process context, identify which metrics are most relevant and help the user gather the necessary data to calculate them.'
+      },
+      {
+        id: 'waiting-line-theory',
+        text: 'Waiting Line Theory (Queue Analysis)',
+        description: 'For processes with queuing/waiting: Calculate arrival rate (λ), service rate (μ), and analyze queue performance. Formulas: Utilization ρ = λ/μ | Avg customers waiting C_W = λ²/[μ(μ-λ)] | Avg customers in system C_S = λ/(μ-λ) | Avg time waiting T_W = λ/[μ(μ-λ)] | Avg time in system T_S = 1/(μ-λ) | Probability of n arrivals P_n = [(λT)ⁿ/n!]e^(-λT)',
         required: false,
-        placeholder: 'Daily automated reports, weekly manual audits, cross-validation with customer feedback...',
-        multiline: true
+        placeholder: 'Arrival rate λ = 42 tickets/day = 1.75/hr | Service rate μ = 2.5 tickets/hr/agent (3 agents = 7.5/hr capacity) | Utilization ρ = 1.75/7.5 = 23.3% | Avg customers in system C_S = 1.75/(7.5-1.75) = 0.30 tickets | Avg time in system T_S = 1/(7.5-1.75) = 0.17 hrs (10.4 min) | During peak: λ = 6/hr, ρ = 80%, C_S = 3.0 tickets, T_S = 0.5 hrs (30 min)...',
+        multiline: true,
+        aiPromptContext: 'Help analyze waiting line/queue dynamics using queuing theory. Guide the user to: 1) Calculate arrival rate λ (customers or items arriving per time period), 2) Calculate service rate μ (items processed per time period per server), 3) Calculate utilization ρ = λ/μ (should be <1 for stable system), 4) Calculate average queue metrics: C_W (customers waiting), C_S (customers in system), T_W (time waiting), T_S (time in system), 5) Analyze by time period (peak vs average), 6) Identify when utilization exceeds 70-80% (queue builds rapidly), 7) Calculate probability of congestion. Use formulas: ρ = λ/μ, C_W = λ²/[μ(μ-λ)], C_S = λ/(μ-λ), T_W = λ/[μ(μ-λ)], T_S = 1/(μ-λ), P_n = [(λT)ⁿ/n!]e^(-λT).'
+      },
+      {
+        id: 'measurement-system-analysis',
+        text: 'Measurement System Analysis (MSA)',
+        description: 'Validate that your measurement system is reliable and repeatable. Assess accuracy, precision, bias, stability, linearity. Conduct Gage R&R if using human inspection/measurement.',
+        required: true,
+        placeholder: 'Automated metrics (response time, ticket count): 100% accurate, validated against manual audit sample (n=50, 0% variance) | CSAT survey: 5-point scale, tested for inter-rater reliability, Cronbach\'s alpha = 0.89 | Manual classification (defect vs non-defect): Gage R&R with 3 appraisers × 10 samples × 3 trials, %GRR = 18% (acceptable)...',
+        multiline: true,
+        aiPromptContext: 'Help design and conduct Measurement System Analysis (MSA) to ensure data quality. Guide the user through: 1) Identify which measurements are automated vs manual (manual needs more validation), 2) For automated systems: validate against known standard or manual audit, 3) For manual measurements: conduct Gage R&R study (multiple appraisers measure same items multiple times), 4) Calculate %GRR (Gage Repeatability & Reproducibility): <10% excellent, <30% acceptable, >30% unacceptable, 5) Assess bias (accuracy - does it measure the true value?), 6) Assess stability (does it stay consistent over time?), 7) Assess linearity (accurate across the measurement range?). Document which measurements are trustworthy.'
       },
       {
         id: 'process-capability',
-        text: 'What is the current process capability?',
-        description: 'Assess how well the current process meets requirements (Cp, Cpk, sigma level, defect rate).',
-        required: false,
-        placeholder: 'Current sigma level: 2.5, Defect rate: 15% of responses exceed 6-hour target...',
-        multiline: true
-      },
-      {
-        id: 'sipoc',
-        text: 'Describe the SIPOC (Suppliers, Inputs, Process, Outputs, Customers)',
-        description: 'Map out the high-level process flow from suppliers to customers.',
-        required: false,
-        placeholder: 'Suppliers: Customers, internal teams | Inputs: Support tickets | Process: Triage→Assign→Resolve→Close | Outputs: Resolved tickets | Customers: End users...',
-        multiline: true
+        text: 'Process Capability Analysis',
+        description: 'Assess how well the current process meets specifications. Calculate Cp, Cpk, Pp, Ppk, sigma level, defect rate (DPMO). Compare process variation to customer requirements.',
+        required: true,
+        placeholder: 'Specification: Response time <2hrs (USL=2.0, no LSL) | Current process: mean=4.2hrs, σ=1.8hrs | Cp = N/A (one-sided spec) | Cpk = (USL-Mean)/(3σ) = (2.0-4.2)/(3×1.8) = -0.41 (highly incapable) | Defect rate: 89% exceed 2hr target | Sigma level: ~0.5σ | Goal: Reduce mean to 1.5hrs, σ to 0.3hrs → Cpk = 0.56, defect rate = 29% (interim), then to Cpk ≥ 1.33...',
+        multiline: true,
+        aiPromptContext: 'Help calculate process capability indices and interpret what they mean. Guide the user through: 1) Identify specification limits from CTQ requirements (USL = upper spec limit, LSL = lower spec limit), 2) Calculate process mean (X̄) and standard deviation (σ) from baseline data, 3) Calculate Cp = (USL - LSL) / 6σ (potential capability - centered process), 4) Calculate Cpk = min[(USL - X̄)/3σ, (X̄ - LSL)/3σ] (actual capability - accounts for centering), 5) Calculate defect rate / DPMO (defects per million opportunities), 6) Determine sigma level, 7) Interpret: Cpk <1.0 = incapable, 1.0-1.33 = barely capable, >1.33 = capable, >2.0 = excellent. Show current state and goal state capability.'
       }
     ]
   },
