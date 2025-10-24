@@ -12,6 +12,13 @@ A sophisticated facilitation agent that guides teams through Kaizen and DMAIC pr
 
 ## Essential Features
 
+### Enhanced Define Phase Tools
+- **Functionality**: Comprehensive toolkit including Problem Statement, Cost of Poor Quality (COPQ) analysis, Voice of Customer/KANO model, Critical to Quality/House of Quality, Devil's Advocate questioning, SIPOC, Stakeholder Analysis, and Project Charter generation
+- **Purpose**: Ensure rigorous problem definition using industry-standard Lean Six Sigma tools before moving to measurement
+- **Trigger**: User navigates to Define phase and works through structured questions sequentially
+- **Progression**: Initial problem → COPQ breakdown (Prevention/Appraisal/Internal Failure/External Failure) → VOC collection (complaints/direct/surveys/become the customer) → KANO classification → CTQ identification → House of Quality mapping → Devil's advocate challenge → SIPOC mapping → Stakeholder analysis → Refined problem statement → SMART goal → Project charter
+- **Success criteria**: Each tool has AI-powered guidance with specific prompt context to generate comprehensive, professional responses that build upon each other
+
 ### Phase-by-Phase Facilitation
 - **Functionality**: Guide users through Define, Measure, Analyze, Improve, Control phases with contextual prompts
 - **Purpose**: Ensure comprehensive project planning without overwhelming teams
@@ -20,11 +27,11 @@ A sophisticated facilitation agent that guides teams through Kaizen and DMAIC pr
 - **Success criteria**: Users can navigate between phases, see their progress, and have inputs persist across sessions
 
 ### AI-Powered Response Generation
-- **Functionality**: Use LLM to help users develop comprehensive answers to facilitation questions
-- **Purpose**: Overcome blank-page syndrome and generate professional documentation
+- **Functionality**: Use LLM to help users develop comprehensive answers to facilitation questions with specialized prompt context for each Define phase tool
+- **Purpose**: Overcome blank-page syndrome and generate professional documentation using best practices for each specific tool (COPQ, KANO, HOQ, etc.)
 - **Trigger**: User clicks "Generate with AI" button on any question
-- **Progression**: Button click → Analyze existing context → AI generates structured response → User reviews/edits → Save to state
-- **Success criteria**: Generated responses feel contextually relevant and professionally formatted
+- **Progression**: Button click → Analyze existing context and other phase answers → Apply tool-specific AI prompt guidance → AI generates structured response → User reviews/edits → Save to state
+- **Success criteria**: Generated responses feel contextually relevant, use proper methodology for each tool, and are professionally formatted
 
 ### BMAD Brainstorming Integration
 - **Functionality**: Offer specialized brainstorming techniques (Brainwriting, Mindmapping, Analogy, Displacement)

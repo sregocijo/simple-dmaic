@@ -9,6 +9,7 @@ export interface Question {
   required?: boolean
   placeholder?: string
   multiline?: boolean
+  aiPromptContext?: string
 }
 
 export interface PhaseData {

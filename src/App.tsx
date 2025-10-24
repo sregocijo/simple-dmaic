@@ -106,27 +106,40 @@ function App() {
       const question = PHASE_DATA[currentPhase].questions.find(q => q.id === questionId)
       if (!question) return
 
-      const contextData = Object.entries(projectData.phases[currentPhase])
+      const allPhaseData = Object.entries(projectData.phases[currentPhase])
         .filter(([key]) => key !== questionId)
-        .map(([key, value]) => `${key}: ${value}`)
-        .join('\n')
+        .filter(([_, value]) => value && value.trim() !== '')
+        .map(([key, value]) => {
+          const q = PHASE_DATA[currentPhase].questions.find(q => q.id === key)
+          return `${q?.text || key}:\n${value}`
+        })
+        .join('\n\n')
 
-      const promptText = `You are an expert Kaizen facilitator helping a team with a continuous improvement project.
+      const baseInstructions = question.aiPromptContext || 
+        'Generate a comprehensive, professional response to this question. Be specific, actionable, and use DMAIC best practices.'
 
+      const promptText = `You are an expert Kaizen and DMAIC facilitator helping a team with a continuous improvement project.
+
+PROJECT CONTEXT:
 Project Name: ${projectData.projectName}
 Current Phase: ${currentPhase.toUpperCase()}
-Question: ${question.text}
-Description: ${question.description || 'N/A'}
 
-Current Context from this phase:
-${contextData || 'No other answers yet'}
+QUESTION TO ANSWER:
+${question.text}
+${question.description ? `\nContext: ${question.description}` : ''}
 
-Current Answer (if any):
-${currentValue || 'No answer yet'}
+GUIDANCE:
+${baseInstructions}
 
-Generate a comprehensive, professional response to this question. If there's already an answer, enhance and expand it. Be specific, actionable, and use DMAIC best practices. Write in a clear, professional tone suitable for project documentation.
+OTHER INFORMATION FROM THIS PHASE:
+${allPhaseData || 'No other information has been provided yet for this phase.'}
 
-Response:`
+CURRENT ANSWER (if any):
+${currentValue || 'No answer has been provided yet.'}
+
+${currentValue ? 'Please enhance, expand, and improve the existing answer.' : 'Please provide a comprehensive answer.'}
+
+Write in a clear, professional tone suitable for project documentation. Be specific and actionable.`
 
       const response = await window.spark.llm(promptText, 'gpt-4o')
       

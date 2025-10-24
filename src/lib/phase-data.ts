@@ -6,60 +6,94 @@ export const PHASE_DATA: Record<string, PhaseData> = {
     description: 'Establish the foundation of your improvement project by clearly articulating the problem, stakeholders, and scope.',
     questions: [
       {
-        id: 'problem-statement',
-        text: 'What is the problem statement?',
-        description: 'Clearly describe the issue that needs improvement. Be specific about what is happening, where, when, and the impact.',
+        id: 'initial-problem-statement',
+        text: 'What is the initial problem statement?',
+        description: 'Clearly describe the issue that needs improvement. Be specific about what is happening, where, when, and the impact. This is your starting hypothesis - it will be refined as you complete this phase.',
         required: true,
         placeholder: 'Our customer service response time has increased by 40% over the last quarter, leading to decreased satisfaction scores...',
-        multiline: true
+        multiline: true,
+        aiPromptContext: 'Help craft a clear, specific problem statement that follows the format: [Process/Area] is experiencing [specific issue] which results in [measurable impact]. Include who is affected, what is happening, where/when it occurs, and the business impact. Make it factual and data-driven.'
+      },
+      {
+        id: 'copq-analysis',
+        text: 'Cost of Poor Quality (COPQ) Analysis',
+        description: 'Break down the financial impact across four categories: Prevention costs (avoiding defects), Appraisal costs (detecting defects), Internal Failure costs (defects found before customer), External Failure costs (defects reaching customer).',
+        required: true,
+        placeholder: 'Prevention: $X quality training, process documentation | Appraisal: $X inspection, testing | Internal Failure: $X rework, scrap, downtime | External Failure: $X returns, warranty, lost customers...',
+        multiline: true,
+        aiPromptContext: 'Help quantify or estimate the Cost of Poor Quality. Structure the response into four categories: 1) Prevention Costs (training, planning, process improvement activities), 2) Appraisal Costs (inspection, testing, audits), 3) Internal Failure Costs (rework, scrap, downtime before reaching customer), 4) External Failure Costs (returns, complaints, warranty work, lost business, reputation damage). If exact numbers are unknown, help estimate relative magnitudes and identify what should be measured.'
+      },
+      {
+        id: 'voc-analysis',
+        text: 'Voice of Customer (VOC) & KANO Analysis',
+        description: 'Gather customer input through multiple channels: complaints, direct discussions, gemba walks, surveys, and "become the customer" exercises. Classify needs using KANO model: Basic (must-haves), Performance (more is better), Delighters (unexpected wow factors).',
+        required: true,
+        placeholder: 'Customer Complaints: "Response too slow, had to call multiple times" | Direct Discussions: Team wants better tracking | Surveys: 78% rate speed as critical | KANO: Basic needs = response within 24h, Performance = faster is better, Delighters = proactive updates...',
+        multiline: true,
+        aiPromptContext: 'Help structure Voice of Customer data collection and KANO analysis. Guide the user to: 1) List customer complaints and feedback themes, 2) Identify insights from direct contact (interviews, gemba walks, shadowing), 3) Note survey findings or indirect feedback, 4) Classify requirements using KANO: Basic Needs (threshold attributes customers expect), Performance Needs (more is better, linear satisfaction), Delighters (unexpected features that excite). Help prioritize which customer needs to focus on.'
+      },
+      {
+        id: 'ctq-hoq',
+        text: 'Critical to Quality (CTQ) & House of Quality',
+        description: 'Translate customer needs into measurable CTQs. Use House of Quality to map customer requirements to technical specifications and identify improvement priorities.',
+        required: true,
+        placeholder: 'CTQs: Response time (<2hrs), Resolution accuracy (>95%), CSAT (>4.5/5) | House of Quality shows strongest correlation between "fast response" and "auto-routing implementation" (correlation: 9/10)...',
+        multiline: true,
+        aiPromptContext: 'Help identify Critical to Quality factors and create a House of Quality analysis. Guide the user to: 1) List 3-5 key CTQs that translate customer needs into measurable characteristics, 2) Define target specifications for each CTQ, 3) Map relationships between customer requirements and technical features/processes (strong/medium/weak), 4) Identify which technical solutions have the strongest correlation to customer satisfaction. Prioritize CTQs by customer importance and current performance gap.'
+      },
+      {
+        id: 'devils-advocate',
+        text: 'Devil\'s Advocate Challenge: "Why do we need this process at all?"',
+        description: 'Challenge fundamental assumptions. Ask provocative questions: Could we eliminate this process entirely? What if we did nothing? Why does this problem exist in the first place? What would happen if we stopped doing this?',
+        required: false,
+        placeholder: 'If we eliminated manual ticket routing entirely and went 100% automated, we might... The problem exists because we never questioned the assumption that... If we did nothing, the cost would be... A radical alternative would be...',
+        multiline: true,
+        aiPromptContext: 'Help challenge fundamental assumptions about this process with provocative "devil\'s advocate" thinking. Guide the user to question: 1) Why does this process exist at all? Is it still necessary? 2) What if we eliminated it entirely - what would happen? 3) What assumptions are we making that might be wrong? 4) Could a completely different approach make this problem irrelevant? 5) What are we not questioning that we should be? Push for radical thinking and challenge the status quo to ensure we\'re solving the right problem.'
+      },
+      {
+        id: 'sipoc',
+        text: 'SIPOC Analysis',
+        description: 'Map the high-level process: Suppliers (who provides inputs), Inputs (what goes into process), Process (5-7 high-level steps), Outputs (what process produces), Customers (who receives outputs).',
+        required: true,
+        placeholder: 'Suppliers: Customers, internal teams | Inputs: Support tickets, customer data | Process: Receive → Triage → Assign → Resolve → Verify → Close → Follow-up | Outputs: Resolved tickets, documentation | Customers: End users, account managers...',
+        multiline: true,
+        aiPromptContext: 'Help create a SIPOC (Suppliers, Inputs, Process, Outputs, Customers) diagram. Structure as: 1) Suppliers: Who provides inputs to this process? (internal/external), 2) Inputs: What materials, information, or resources enter the process?, 3) Process: List 5-7 high-level process steps from start to finish, 4) Outputs: What does the process produce? (products, services, information), 5) Customers: Who receives and uses the outputs? Keep it high-level - detailed process mapping comes later.'
+      },
+      {
+        id: 'stakeholder-analysis',
+        text: 'Stakeholder Analysis',
+        description: 'Identify all stakeholders and analyze their: Interest level (high/low), Influence/Power (high/low), Support level (champion/supporter/neutral/resistant), Communication needs, and Key concerns.',
+        required: true,
+        placeholder: 'CS Manager: High interest, High power, Champion - needs weekly updates | End Users: High interest, Low power, Supportive - need change communication | IT: Medium interest, High power, Neutral - concerned about workload...',
+        multiline: true,
+        aiPromptContext: 'Help create a comprehensive stakeholder analysis. For each stakeholder or group, identify: 1) Role and relationship to project, 2) Interest Level (How much does this matter to them?), 3) Influence/Power (Can they help or block progress?), 4) Current stance (Champion, Supporter, Neutral, Resistant, Blocker), 5) Key concerns or motivations, 6) Communication strategy and frequency needed. Categorize into quadrants: High Power/High Interest (manage closely), High Power/Low Interest (keep satisfied), Low Power/High Interest (keep informed), Low Power/Low Interest (monitor).'
+      },
+      {
+        id: 'refined-problem-statement',
+        text: 'Refined Problem Statement',
+        description: 'Now that you\'ve completed the analysis above, restate the problem with greater clarity and precision. What did you learn from COPQ, VOC, SIPOC, and stakeholder input that refines your understanding?',
+        required: true,
+        placeholder: 'Based on our analysis, the core problem is not just response time, but lack of intelligent ticket routing causing 45% of tickets to be assigned incorrectly, resulting in $120K annual COPQ and customer frustration (KANO Basic Need not met)...',
+        multiline: true,
+        aiPromptContext: 'Help synthesize all the Define phase analysis into a refined, precise problem statement. Draw insights from: COPQ analysis (what\'s the real cost?), VOC/KANO (what do customers actually need?), CTQ/House of Quality (what should we measure?), Devil\'s Advocate (are we solving the right problem?), SIPOC (where in the process is the issue?), Stakeholder Analysis (whose problem is this?). The refined statement should be more specific, data-driven, and focused on root issues rather than symptoms.'
       },
       {
         id: 'goal-statement',
-        text: 'What is the goal statement?',
-        description: 'Define the measurable outcome you want to achieve. Use SMART criteria (Specific, Measurable, Achievable, Relevant, Time-bound).',
+        text: 'SMART Goal Statement',
+        description: 'Define the measurable outcome you want to achieve. Use SMART criteria: Specific (what exactly), Measurable (quantified), Achievable (realistic), Relevant (aligns with business goals), Time-bound (clear deadline).',
         required: true,
-        placeholder: 'Reduce average customer service response time from 4 hours to 2 hours within 90 days...',
-        multiline: true
+        placeholder: 'Implement intelligent ticket routing to reduce average response time from 4.2 hours to 2.0 hours, improve first-contact resolution from 58% to 80%, and increase CSAT from 72% to 85% within 90 days, saving $45K annually...',
+        multiline: true,
+        aiPromptContext: 'Help craft a SMART goal statement based on the refined problem statement and CTQ analysis. Ensure it includes: Specific (exactly what will be improved), Measurable (baseline and target metrics with numbers), Achievable (realistic given constraints and timeline), Relevant (ties to business impact and customer needs from VOC), Time-bound (clear deadline and milestones). Include both process metrics (response time, defect rate) and outcome metrics (customer satisfaction, financial impact).'
       },
       {
-        id: 'stakeholders',
-        text: 'Who are the stakeholders?',
-        description: 'List all individuals or groups who have an interest in or will be affected by this project.',
+        id: 'project-charter',
+        text: 'Project Charter',
+        description: 'Synthesize all Define phase work into a formal charter: Business case, Problem statement, Goal statement, Scope (in/out), Stakeholders & roles, Timeline, Resources, Success metrics, Deliverables.',
         required: true,
-        placeholder: 'Customer Service Team, IT Department, Customers, Operations Manager...',
-        multiline: true
-      },
-      {
-        id: 'voc-inputs',
-        text: 'What are the Voice of Customer (VOC) inputs?',
-        description: 'Capture what customers have said about this issue. Include quotes, survey results, or feedback themes.',
-        required: false,
-        placeholder: '"I waited hours for a response..." - Survey shows 65% want faster support...',
-        multiline: true
-      },
-      {
-        id: 'ctqs',
-        text: 'What are the Critical to Quality (CTQ) factors?',
-        description: 'Identify the measurable characteristics that are critical to customer satisfaction.',
-        required: true,
-        placeholder: 'Response time, resolution accuracy, customer satisfaction score, first-contact resolution rate...',
-        multiline: true
-      },
-      {
-        id: 'constraints',
-        text: 'What constraints or boundaries should be considered?',
-        description: 'List any limitations such as budget, time, resources, technology, or organizational policies.',
-        required: false,
-        placeholder: 'Budget: $10,000, Timeline: 3 months, Cannot add headcount, Must use existing systems...',
-        multiline: true
-      },
-      {
-        id: 'scope',
-        text: 'What is in scope and out of scope?',
-        description: 'Clearly define what this project will and will not address.',
-        required: true,
-        placeholder: 'In Scope: Email and chat support response times. Out of Scope: Phone support, after-hours service...',
-        multiline: true
+        placeholder: 'Business Case: $120K COPQ + customer churn risk | Problem: Manual routing causes delays... | Goal: Reduce response time to 2hrs... | Scope: In - Email/chat routing, Out - Phone/after-hours | Team: PM (Jane), Sponsor (Bob), CS Lead (Sue)... | Timeline: 90 days... | Resources: $15K budget, 2 FTE... | Success: <2hr response, >85% CSAT, $45K savings | Deliverables: Routing system, updated SOPs, training...',
+        multiline: true,
+        aiPromptContext: 'Help create a comprehensive Project Charter that serves as the formal artifact for the Define phase. Structure it with these sections: 1) Business Case & Background (why this matters, COPQ), 2) Problem Statement (refined version), 3) Goal Statement (SMART goals), 4) Scope (what\'s in/out), 5) Stakeholders & Team Roles, 6) Timeline & Milestones, 7) Resources & Budget, 8) Critical to Quality Metrics, 9) Success Criteria, 10) Risks & Assumptions, 11) Deliverables. This becomes the contract between the project team and sponsors.'
       }
     ]
   },
